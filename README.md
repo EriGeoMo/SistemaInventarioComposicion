@@ -1,13 +1,13 @@
 # Documentación del Proyecto: Sistema de Gestión de Inventarios Patrón de Composición
 
 ## Integrantes (Grupo 4)
-* Guillermo Alexander Rodríguez Cortez[cite: 62]
-* Salvador Isaías Juárez Alcántara[cite: 62]
-* Luis Eduardo Guiroa Linares[cite: 62]
-* Erick Giovanni Monroy López[cite: 62]
-* José Raúl Moreno Mejía[cite: 62]
-* Vilma Melissa Alvarado Parada[cite: 62]
-* Leonel Antonio Hernández Pérez[cite: 62]
+* Guillermo Alexander Rodríguez Cortez
+* Salvador Isaías Juárez Alcántara
+* Luis Eduardo Guiroa Linares
+* Erick Giovanni Monroy López
+* José Raúl Moreno Mejía
+* Vilma Melissa Alvarado Parada
+* Leonel Antonio Hernández Pérez
 
 ## 1. Enfoque Utilizado
 Para el desarrollo del **Tema 1**, se implementó el **Patrón de Composición** en C#. El objetivo principal es construir clases complejas a partir de otras más simples, estableciendo una relación de tipo "tiene un" has-a en lugar de herencia is-a.
