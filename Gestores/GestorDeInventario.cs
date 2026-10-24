@@ -35,6 +35,18 @@ namespace SistemaInventarioComposicion.Gestores
             }
         }
 
+        public void ActualizarProducto(int id, string nombre, decimal precio, int cantidad)
+        {
+            var producto = productos.FirstOrDefault(p => p.Id == id);
+            if (producto != null)
+            {
+                producto.Nombre = nombre.Trim();
+                producto.Precio = precio;
+                producto.Cantidad = cantidad;
+                Console.WriteLine($"[Gestor] Producto '{producto.Nombre}' actualizado.");
+            }
+        }
+
         public List<Producto> ObtenerProductos()
         {
             return productos;
