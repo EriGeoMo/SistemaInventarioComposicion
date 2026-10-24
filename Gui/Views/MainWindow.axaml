@@ -1,0 +1,162 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SistemaInventarioComposicion.Gui.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1150" d:DesignHeight="720"
+        x:Class="SistemaInventarioComposicion.Gui.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        MinWidth="950" MinHeight="650"
+        Title="SISTEMA DE INVENTARIO">
+  <Grid RowDefinitions="Auto,*">
+    <Border Background="#1F6BFF" Padding="16,12">
+      <TextBlock Text="GESTIÓN DE INVENTARIO" Foreground="White" FontSize="18" FontWeight="Bold"/>
+    </Border>
+
+    <TabControl Grid.Row="1" Margin="12">
+      <TabItem Header="Inventario">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="4">
+          <Border Classes="card" Grid.Row="0" Margin="0,0,0,12">
+            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="10">
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Formulario de Producto" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                <Border IsVisible="{Binding ModoEdicion}" Background="#FEF3C7" CornerRadius="6" Padding="8,4">
+                  <TextBlock Text="{Binding ProductoEnEdicionId, StringFormat='Editando producto ID: {0} - El ID no se puede modificar'}" Foreground="#92400E"/>
+                </Border>
+              </StackPanel>
+              <WrapPanel Grid.Row="1" Orientation="Horizontal" ItemWidth="230" ItemHeight="72">
+                <StackPanel Margin="0,0,12,8">
+                  <TextBlock Text="ID" Margin="0,0,0,4"/>
+                  <NumericUpDown Minimum="1" Increment="1" Value="{Binding IdNumerico}" FormatString="0" IsEnabled="{Binding !ModoEdicion}"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,12,8">
+                  <TextBlock Text="Nombre del producto" Margin="0,0,0,4"/>
+                  <TextBox PlaceholderText="Ej. Laptop Dell" Text="{Binding NombreTexto}"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,12,8">
+                  <TextBlock Text="Precio" Margin="0,0,0,4"/>
+                  <NumericUpDown Minimum="0" Increment="0.01" Value="{Binding PrecioNumerico}" FormatString="F2"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,12,8">
+                  <TextBlock Text="Cantidad / Stock" Margin="0,0,0,4"/>
+                  <NumericUpDown Minimum="0" Increment="1" Value="{Binding CantidadNumerico}" FormatString="0"/>
+                </StackPanel>
+              </WrapPanel>
+              <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8">
+                <Button Content="{Binding TextoBotonAccion}" Command="{Binding AgregarCommand}" Background="#22C55E" Foreground="White"/>
+                <Button Content="Cancelar edición" Command="{Binding CancelarEdicionCommand}" IsVisible="{Binding ModoEdicion}"/>
+                <Button Content="Limpiar formulario" Command="{Binding LimpiarFormularioCommand}"/>
+                <Button Content="Recargar registros" Command="{Binding CargarCommand}"/>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <TextBlock Grid.Row="1" Text="{Binding Mensaje}" Margin="0,0,0,10" TextWrapping="Wrap" Foreground="{Binding ColorMensaje}"/>
+
+            <TextBlock Grid.Row="2" Text="Listado de productos" Margin="0,0,0,6" Opacity="0.8"/>
+
+          <Border Classes="card" Grid.Row="3" Padding="0">
+            <Grid RowDefinitions="*,Auto">
+              <DataGrid Grid.Row="0" ItemsSource="{Binding Productos}" SelectedItem="{Binding ProductoSeleccionado}" AutoGenerateColumns="False" IsReadOnly="True" CanUserReorderColumns="True" CanUserResizeColumns="True" GridLinesVisibility="Horizontal" HeadersVisibility="Column" Margin="12">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
+                  <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="*"/>
+                  <DataGridTextColumn Header="Precio" Binding="{Binding Precio, StringFormat={}{0:C}}" Width="120"/>
+                  <DataGridTextColumn Header="Stock" Binding="{Binding Cantidad}" Width="90"/>
+                  <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal, StringFormat={}{0:C}}" Width="130"/>
+                  <DataGridTemplateColumn Header="Acciones" Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                          <Button Content="Editar" Command="{Binding $parent[DataGrid].DataContext.EditarDesdeFilaCommand}" CommandParameter="{Binding}"/>
+                          <Button Content="Eliminar" Background="#FEE2E2" Command="{Binding $parent[DataGrid].DataContext.EliminarDesdeFilaCommand}" CommandParameter="{Binding}"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+              <Border Grid.Row="1" Background="#F8FAFC" Padding="12,10" CornerRadius="0,0,10,10">
+                <StackPanel Orientation="Horizontal" Spacing="24">
+                  <TextBlock Text="{Binding TotalProductos, StringFormat='Productos: {0}'}"/>
+                  <TextBlock Text="{Binding TotalItems, StringFormat='Unidades totales: {0}'}"/>
+                  <TextBlock Text="{Binding ValorTotal, StringFormat='Valor total: {0:C}'}" FontWeight="SemiBold"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Reportes">
+        <ScrollViewer>
+          <StackPanel Margin="12" Spacing="12">
+            <TextBlock Text="REPORTE DETALLADO DE INVENTARIO" FontSize="16" FontWeight="Bold"/>
+            <Border Classes="card">
+              <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                <StackPanel>
+                  <TextBlock Text="Productos registrados" Opacity="0.7"/>
+                  <TextBlock Text="{Binding TotalProductos}" FontSize="30" FontWeight="Bold"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                  <TextBlock Text="Unidades totales" Opacity="0.7"/>
+                  <TextBlock Text="{Binding TotalItems}" FontSize="30" FontWeight="Bold"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                  <TextBlock Text="Valor total del inventario" Opacity="0.7"/>
+                  <TextBlock Text="{Binding ValorTotal, StringFormat={}{0:C}}" FontSize="30" FontWeight="Bold" Foreground="#1F6BFF"/>
+                </StackPanel>
+              </Grid>
+            </Border>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+              <Border Classes="card">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Producto más caro" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding ProductoMasCaroTexto}" TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+              <Border Classes="card" Grid.Column="1">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="Producto más barato" FontWeight="SemiBold"/>
+                  <TextBlock Text="{Binding ProductoMasBaratoTexto}" TextWrapping="Wrap"/>
+                </StackPanel>
+              </Border>
+            </Grid>
+
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Stock bajo (≤ 5 unidades) - Requiere reposición" FontWeight="SemiBold" FontSize="14"/>
+                <TextBlock Text="{Binding StockBajo}" TextWrapping="Wrap"/>
+                <DataGrid ItemsSource="{Binding StockBajoLista}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" HeadersVisibility="Column" IsVisible="{Binding StockBajoLista.Count}">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
+                    <DataGridTextColumn Header="Producto" Binding="{Binding Nombre}" Width="*"/>
+                    <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
+                    <DataGridTextColumn Header="Precio unitario" Binding="{Binding Precio, StringFormat={}{0:C}}" Width="140"/>
+                    <DataGridTextColumn Header="Valor a reponer" Binding="{Binding ValorReponer, StringFormat={}{0:C}}" Width="150"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Inventario completo" FontWeight="SemiBold" FontSize="14"/>
+                <DataGrid ItemsSource="{Binding Productos}" AutoGenerateColumns="False" IsReadOnly="True" GridLinesVisibility="Horizontal" HeadersVisibility="Column">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="70"/>
+                    <DataGridTextColumn Header="Producto" Binding="{Binding Nombre}" Width="*"/>
+                    <DataGridTextColumn Header="Precio unitario" Binding="{Binding Precio, StringFormat={}{0:C}}" Width="140"/>
+                    <DataGridTextColumn Header="Stock" Binding="{Binding Cantidad}" Width="90"/>
+                    <DataGridTextColumn Header="Subtotal" Binding="{Binding Subtotal, StringFormat={}{0:C}}" Width="140"/>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</Window>
