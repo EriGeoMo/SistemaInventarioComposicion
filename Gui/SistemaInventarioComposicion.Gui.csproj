@@ -26,5 +26,7 @@
   <ItemGroup>
     <Compile Include="../Modelos/Producto.cs" Link="Modelos/Producto.cs" />
     <Compile Include="../Gestores/GestorDeInventario.cs" Link="Gestores/GestorDeInventario.cs" />
+    <Compile Include="../Servicios/Reportes.cs" Link="Servicios/Reportes.cs" />
+    <Compile Include="../Tienda.cs" Link="Tienda.cs" />
   </ItemGroup>
 </Project>

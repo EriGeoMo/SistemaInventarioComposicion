@@ -6,15 +6,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SistemaInventarioComposicion.Gestores;
-using SistemaInventarioComposicion.Modelos;
+using SistemaInventarioComposicion;
 using SistemaInventarioComposicion.Gui.Services;
+using SistemaInventarioComposicion.Modelos;
+using SistemaInventarioComposicion.Servicios;
 
 namespace SistemaInventarioComposicion.Gui.ViewModels;
 
 public partial class MainWindowViewModel : ObservableObject
 {
-    private readonly GestorDeInventario _gestor = new();
+    // El ViewModel usa Tienda como contenedor de composición y no instancia el gestor directamente.
+    private readonly Tienda _tienda = new();
     private readonly InventarioStore _store = new();
 
     [ObservableProperty]
@@ -93,7 +95,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         try
         {
-            _store.Guardar(_gestor.ObtenerProductos());
+            _store.Guardar(_tienda.ObtenerProductos());
         }
         catch (Exception ex)
         {
@@ -136,7 +138,7 @@ public partial class MainWindowViewModel : ObservableObject
         decimal precio = Math.Round(PrecioNumerico.Value, 2);
         int cantidad = (int)Math.Round(CantidadNumerico.Value);
 
-        foreach (var p in _gestor.ObtenerProductos())
+        foreach (var p in _tienda.ObtenerProductos())
         {
             if (p.Id == id)
             {
@@ -153,7 +155,7 @@ public partial class MainWindowViewModel : ObservableObject
         if (!confirmar) return;
 
         var prod = new Producto(id, NombreTexto.Trim(), precio, cantidad);
-        _gestor.AgregarProducto(prod);
+        _tienda.AgregarProducto(prod);
         GuardarAutomatico();
         CancelarEdicion();
         ActualizarSiguienteId();
@@ -189,7 +191,7 @@ public partial class MainWindowViewModel : ObservableObject
 
         int cantidad = (int)Math.Round(CantidadNumerico.Value);
         decimal precio = Math.Round(PrecioNumerico.Value, 2);
-        _gestor.ActualizarProducto(ProductoEnEdicionId, NombreTexto.Trim(), precio, cantidad);
+        _tienda.ActualizarProducto(ProductoEnEdicionId, NombreTexto.Trim(), precio, cantidad);
         GuardarAutomatico();
         CancelarEdicion();
         ActualizarSiguienteId();
@@ -212,7 +214,7 @@ public partial class MainWindowViewModel : ObservableObject
             return;
         }
         int cantidad = (int)Math.Round(CantidadNumerico.Value);
-        _gestor.ModificarCantidad(ProductoSeleccionado.Id, cantidad);
+        _tienda.ModificarCantidad(ProductoSeleccionado.Id, cantidad);
         LimpiarFormularioInterno();
         ProductoSeleccionado = null;
         Refrescar();
@@ -246,7 +248,7 @@ public partial class MainWindowViewModel : ObservableObject
             confirmar = await SolicitarConfirmacion($"¿Está seguro de eliminar '{nombre}' (ID: {id})?\nEsta acción no se puede deshacer.");
         }
         if (!confirmar) return;
-        _gestor.EliminarProducto(id);
+        _tienda.EliminarProducto(id);
         GuardarAutomatico();
         CancelarEdicion();
         Refrescar();
@@ -257,7 +259,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void EditarDesdeFila(ProductoView? item)
     {
         if (item == null) return;
-        var producto = _gestor.ObtenerProductos().FirstOrDefault(p => p.Id == item.Id);
+        var producto = _tienda.ObtenerProductos().FirstOrDefault(p => p.Id == item.Id);
         if (producto == null) return;
         ModoEdicion = true;
         ProductoEnEdicionId = producto.Id;
@@ -297,7 +299,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         try
         {
-            _store.Guardar(_gestor.ObtenerProductos());
+            _store.Guardar(_tienda.ObtenerProductos());
             MarcarMensaje($"Guardado en: {_store.GetPath()}", false);
         }
         catch (Exception ex)
@@ -313,18 +315,18 @@ public partial class MainWindowViewModel : ObservableObject
         try
         {
             var lista = _store.Cargar();
-            foreach (var p in _gestor.ObtenerProductos().ToList())
+            foreach (var p in _tienda.ObtenerProductos().ToList())
             {
-                _gestor.EliminarProducto(p.Id);
+                _tienda.EliminarProducto(p.Id);
             }
             foreach (var p in lista)
             {
                 bool existe = false;
-                foreach (var ep in _gestor.ObtenerProductos())
+                foreach (var ep in _tienda.ObtenerProductos())
                 {
                     if (ep.Id == p.Id) { existe = true; break; }
                 }
-                if (!existe) _gestor.AgregarProducto(p);
+                if (!existe) _tienda.AgregarProducto(p);
             }
             CancelarEdicion();
             ActualizarSiguienteId();
@@ -369,7 +371,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void ActualizarSiguienteId()
     {
         if (ModoEdicion) return;
-        var lista = _gestor.ObtenerProductos();
+        var lista = _tienda.ObtenerProductos();
         if (lista.Count == 0)
         {
             IdNumerico = 1;
@@ -389,7 +391,7 @@ public partial class MainWindowViewModel : ObservableObject
     private void Refrescar()
     {
         Productos.Clear();
-        var lista = _gestor.ObtenerProductos();
+        var lista = _tienda.ObtenerProductos();
         foreach (var p in lista.OrderBy(x => x.Id))
         {
             Productos.Add(new ProductoView
@@ -401,17 +403,19 @@ public partial class MainWindowViewModel : ObservableObject
                 Subtotal = p.Precio * p.Cantidad
             });
         }
-        TotalItems = Productos.Sum(x => x.Cantidad);
-        ValorTotal = Productos.Sum(x => x.Subtotal);
-        ActualizarReportesDatos(lista);
+        // La GUI presenta las métricas calculadas por Reportes y solo las adapta a la vista.
+        var reporte = _tienda.GenerarReporte();
+        TotalItems = reporte.TotalItems;
+        ValorTotal = reporte.ValorTotal;
+        ActualizarReportesDatos(reporte);
         PuedeModificarEliminar = ProductoSeleccionado != null;
     }
 
-    private void ActualizarReportesDatos(List<Producto> lista)
+    private void ActualizarReportesDatos(ReporteInventario reporte)
     {
-        TotalProductos = lista.Count;
+        TotalProductos = reporte.TotalProductos;
         StockBajoLista.Clear();
-        if (lista.Count == 0)
+        if (reporte.TotalProductos == 0)
         {
             PrecioMasAlto = 0;
             PrecioMasBajo = 0;
@@ -420,19 +424,19 @@ public partial class MainWindowViewModel : ObservableObject
             ProductoMasBaratoTexto = "N/A";
             return;
         }
-        var masCaro = lista.OrderByDescending(x => x.Precio).First();
-        var masBarato = lista.OrderBy(x => x.Precio).First();
-        PrecioMasAlto = masCaro.Precio;
-        PrecioMasBajo = masBarato.Precio;
+
+        var masCaro = reporte.ProductoMasCaro!;
+        var masBarato = reporte.ProductoMasBarato!;
+        PrecioMasAlto = reporte.PrecioMasAlto;
+        PrecioMasBajo = reporte.PrecioMasBajo;
         ProductoMasCaroTexto = $"{masCaro.Nombre} (ID {masCaro.Id}) - {masCaro.Precio:C}";
         ProductoMasBaratoTexto = $"{masBarato.Nombre} (ID {masBarato.Id}) - {masBarato.Precio:C}";
 
-        var bajos = lista.Where(x => x.Cantidad <= 5).OrderBy(x => x.Cantidad).ToList();
-        if (bajos.Count == 0) StockBajo = "Ninguno (todos con stock mayor a 5).";
+        if (reporte.ProductosStockBajo.Count == 0) StockBajo = "Ninguno (todos con stock mayor a 5).";
         else
         {
-            StockBajo = $"{bajos.Count} producto(s) con stock bajo.";
-            foreach (var b in bajos)
+            StockBajo = $"{reporte.ProductosStockBajo.Count} producto(s) con stock bajo.";
+            foreach (var b in reporte.ProductosStockBajo)
             {
                 StockBajoLista.Add(new StockBajoView
                 {
