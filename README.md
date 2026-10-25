@@ -29,7 +29,7 @@ Esta separación facilita el mantenimiento. Si en el futuro se desea cambiar la 
 ## 3. Instrucciones de Ejecución
 1. Asegúrese de tener instalado el SDK de .NET.
 2. Clone el repositorio o descargue los archivos del proyecto, asegurándose de estar en la rama que contiene la interfaz (ej. `JA22005` o `Gui`).
-3. Abra una terminal (Símbolo del sistema, PowerShell o la terminal de VS Code) y navegue hasta el directorio raíz del proyecto.
+3. Abra una terminal Símbolo del sistema, PowerShell o la terminal de VS Code y navegue hasta el directorio raíz del proyecto.
 4. Para ejecutar el sistema con su interfaz gráfica, utilice el siguiente comando:
    `dotnet run --project Gui`
 5. El sistema abrirá la ventana de "Gestión de Inventario" donde podrá realizar las operaciones CRUD, visualizar el listado y comprobar el cálculo automático del stock y valor total a través de nuestros componentes delegados.
