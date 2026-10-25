@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 1,
+    "Nombre": "Laptop HP",
+    "Precio": 260,
+    "Cantidad": 26
+  },
+  {
+    "Id": 2,
+    "Nombre": "Laptop DELL",
+    "Precio": 150,
+    "Cantidad": 4
+  },
+  {
+    "Id": 3,
+    "Nombre": "Mouse Logitech",
+    "Precio": 70,
+    "Cantidad": 6
+  }
+]
