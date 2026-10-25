@@ -27,9 +27,9 @@ Para cumplir con los criterios de "Reutilización y Modularidad" y "Calidad del 
 Esta separación facilita el mantenimiento. Si en el futuro se desea cambiar la forma en que se muestran los reportes por ejemplo, exportar a PDF en lugar de imprimir en consola, solo se debe modificar la clase `Reportes` sin afectar el resto del sistema.
 
 ## 3. Instrucciones de Ejecución
-1. Asegúrese de tener instalado el SDK de .NET versión 8.0 o superior.
-2. Clone el repositorio o descargue los archivos del proyecto.
-3. Abra una terminal símbolo del sistema o PowerShell y navegue hasta el directorio raíz del proyecto donde se encuentra el archivo `.csproj`.
-4. Ejecute el siguiente comando para compilar y probar la aplicación:
-   `dotnet run`
-5. El sistema mostrará en consola la simulación de las operaciones de inventario y la generación de reportes.
+1. Asegúrese de tener instalado el SDK de .NET.
+2. Clone el repositorio o descargue los archivos del proyecto, asegurándose de estar en la rama que contiene la interfaz (ej. `JA22005` o `Gui`).
+3. Abra una terminal (Símbolo del sistema, PowerShell o la terminal de VS Code) y navegue hasta el directorio raíz del proyecto.
+4. Para ejecutar el sistema con su interfaz gráfica, utilice el siguiente comando:
+   `dotnet run --project Gui`
+5. El sistema abrirá la ventana de "Gestión de Inventario" donde podrá realizar las operaciones CRUD, visualizar el listado y comprobar el cálculo automático del stock y valor total a través de nuestros componentes delegados.
