@@ -148,21 +148,19 @@ dotnet run
 ```
 
 ### Interfaz gráfica
-Opción 1, desde la raíz del repositorio:
+Opción 1, desde la raíz del repositorio utilizando el siguiente comando en Visual Studio:
 
 ```bash
 dotnet run --project Gui
 ```
 
-Opción 2, desde Visual Studio:
+Opción 2, mediante el ejecutable `.exe`:
 
-1. Abrir `Gui/SistemaInventarioComposicion.Gui.csproj`.
-2. Establecerlo como proyecto de inicio.
-3. Ejecutar con `F5`.
+El archivo ejecutable (.exe) de la aplicación se encuentra en la carpeta principal del proyecto, dentro de una carpeta dedicada llamada `EJECUTABLE`.
 
-Opción 3, mediante el ejecutable `.exe`:
+<img width="529" height="234" alt="image" src="https://github.com/user-attachments/assets/9855b12e-b612-44e8-a0ed-e28887eb8b1a" />
 
------------------------- falta
+<img width="538" height="129" alt="image" src="https://github.com/user-attachments/assets/550dac0e-1e56-413d-aeb3-524a668eab8d" />
 
 ## 9. Decisiones de diseño y reutilización
 
