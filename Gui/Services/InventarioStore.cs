@@ -47,7 +47,8 @@ public class InventarioStore
         return lista;
     }
 
-    public void Guardar(List<Producto> productos)
+    // InventarioStore adapta la colección del dominio al JSON persistido en la raíz.
+    public void Guardar(IReadOnlyList<Producto> productos)
     {
         var path = GetPath();
         var lista = new List<ProductoDto>();
